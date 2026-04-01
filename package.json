@@ -1,15 +1,18 @@
 {
-  "name": "react-example",
+  "name": "munich-events-ai",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://iannacone-google.github.io/MunichEvents.ai",
   "scripts": {
     "dev": "tsx server.ts",
     "build": "vite build",
     "start": "node server.ts",
     "preview": "vite preview",
     "clean": "rm -rf dist",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
@@ -37,6 +40,7 @@
     "@types/express-session": "^1.18.2",
     "@types/node": "^22.14.0",
     "autoprefixer": "^10.4.21",
+    "gh-pages": "^6.3.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
