@@ -1,0 +1,5 @@
+{
+  "name": "Event2Calendar AI",
+  "description": "Extract event details from links or screenshots using AI and sync them to your Google Calendar.",
+  "requestFramePermissions": ["camera", "microphone"]
+}
