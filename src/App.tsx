@@ -129,6 +129,7 @@ export default function App() {
           if (!file) continue;
 
           setIsExtracting(true);
+          setCurrentView('review');
           setNotification({ type: 'info', message: 'Analyzing pasted image...' });
           
           try {
@@ -208,6 +209,7 @@ export default function App() {
             const file = new File([blob], "pasted-image.png", { type });
             
             setIsExtracting(true);
+            setCurrentView('review');
             setNotification({ type: 'info', message: 'Analyzing clipboard image...' });
             
             const base64 = await new Promise<string>((resolve, reject) => {
@@ -295,6 +297,7 @@ export default function App() {
     if (!url) return;
     
     setIsExtracting(true);
+    setCurrentView('review');
     setNotification(null);
     try {
       const events = await extractEventFromUrl(url, onGeminiRetry);
@@ -326,6 +329,7 @@ export default function App() {
     if (!rawText.trim()) return;
     
     setIsExtracting(true);
+    setCurrentView('review');
     setNotification(null);
     try {
       const events = await extractEventFromText(rawText, onGeminiRetry);
@@ -354,6 +358,7 @@ export default function App() {
     if (!file) return;
 
     setIsExtracting(true);
+    setCurrentView('review');
     setNotification(null);
     try {
       const base64 = await new Promise<string>((resolve, reject) => {
@@ -840,9 +845,9 @@ export default function App() {
               <div className="space-y-8">
                 <div className="flex items-center justify-between">
                   <h3 className="text-3xl font-bold tracking-tight">
-                    {extractedEvents.length > 0 ? "Review & Sync" : "No events to review"}
+                    {isExtracting ? "Extracting Events..." : extractedEvents.length > 0 ? "Review & Sync" : "No events to review"}
                   </h3>
-                  {extractedEvents.length > 0 && (
+                  {extractedEvents.length > 0 && !isExtracting && (
                     <button 
                       onClick={() => {
                         if (window.confirm("Are you sure you want to clear the list?")) {
@@ -858,6 +863,24 @@ export default function App() {
                 </div>
 
                 <AnimatePresence mode="popLayout">
+                  {isExtracting && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="bg-white border border-[#1A1A1A]/10 rounded-[2rem] p-12 shadow-sm overflow-hidden flex flex-col items-center justify-center text-center gap-6"
+                    >
+                      <div className="w-20 h-20 bg-[#FF6321]/10 rounded-3xl flex items-center justify-center text-[#FF6321]">
+                        <Loader2 className="w-10 h-10 animate-spin" />
+                      </div>
+                      <div>
+                        <h4 className="text-2xl font-bold tracking-tight mb-2">AI is working...</h4>
+                        <p className="text-[#1A1A1A]/60 max-w-xs mx-auto">
+                          We are extracting the event details from your source. This usually takes a few seconds.
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
                   {extractedEvents.map((event, index) => (
                     <motion.div
                       key={index}
