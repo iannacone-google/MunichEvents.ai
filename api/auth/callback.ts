@@ -4,9 +4,9 @@ import { google } from 'googleapis';
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { code } = req.query;
   
-  const protocol = req.headers['x-forwarded-proto'] || 'https';
   const host = req.headers['host'];
-  const baseUrl = process.env.APP_URL || `${protocol}://${host}`;
+  // Use APP_URL if defined, otherwise fallback to current host with https
+  const baseUrl = process.env.APP_URL || `https://${host}`;
   const redirectUri = `${baseUrl.replace(/\/$/, '')}/api/auth/callback`;
 
   const client = new google.auth.OAuth2(
