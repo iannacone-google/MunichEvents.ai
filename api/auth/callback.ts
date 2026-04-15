@@ -1,7 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
+import { allowCors } from '../_cors.js';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   const { code } = req.query;
   
   const host = req.headers['host'];
@@ -35,3 +36,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(500).send('Authentication failed');
   }
 }
+
+export default allowCors(handler);

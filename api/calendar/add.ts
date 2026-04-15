@@ -1,7 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
+import { allowCors } from '../_cors.js';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -49,3 +50,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(500).json({ error: 'Failed to add event to calendar' });
   }
 }
+
+export default allowCors(handler);

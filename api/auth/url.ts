@@ -1,7 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { google } from 'googleapis';
+import { allowCors } from '../_cors.js';
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+function handler(req: VercelRequest, res: VercelResponse) {
   const host = req.headers['host'];
   // Use APP_URL if defined, otherwise fallback to current host with https
   const baseUrl = process.env.APP_URL || `https://${host}`;
@@ -26,3 +27,5 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
   res.json({ url });
 }
+
+export default allowCors(handler);

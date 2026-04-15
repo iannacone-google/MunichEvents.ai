@@ -392,9 +392,11 @@ export default function App() {
     }
   };
 
+  const API_BASE = import.meta.env.VITE_API_URL || '';
+
   const handleConnect = async () => {
     try {
-      const response = await fetch('/api/auth/url');
+      const response = await fetch(`${API_BASE}/api/auth/url`);
       const { url } = await response.json();
       window.open(url, 'oauth_popup', 'width=600,height=700');
     } catch (error) {
@@ -436,7 +438,7 @@ export default function App() {
         }
       }
 
-      const response = await fetch('/api/calendar/add', {
+      const response = await fetch(`${API_BASE}/api/calendar/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
