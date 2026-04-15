@@ -5,7 +5,7 @@ import {defineConfig, loadEnv} from 'vite';
 
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
-  const appBase = env.APP_BASE?.replace(/^\/|\/$/g, '') || (mode === 'production' ? 'MunichEvents.ai' : '');
+  const appBase = env.APP_BASE?.replace(/^\/|\/$/g, '') || '';
   const base = appBase ? `/${appBase}/` : '/';
 
   return {

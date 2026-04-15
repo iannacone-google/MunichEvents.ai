@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
-    "build:gh": "VITE_API_URL=https://munich-events-ai.vercel.app vite build",
+    "build:gh": "VITE_API_URL=https://munich-events-ai.vercel.app APP_BASE=MunichEvents.ai vite build",
     "predeploy": "npm run build:gh",
     "deploy": "gh-pages -d dist"
   },
