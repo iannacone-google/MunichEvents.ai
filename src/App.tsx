@@ -124,6 +124,15 @@ export default function App() {
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (showManualForm) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [showManualForm]);
+
   const onGeminiRetry = (attempt: number, delay: number) => {
     setNotification({ 
       type: 'info', 
@@ -1018,9 +1027,9 @@ export default function App() {
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden"
+              className="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
-              <div className="p-8 sm:p-12">
+              <div className="p-8 sm:p-12 overflow-y-auto">
                 <div className="flex items-center justify-between mb-8">
                   <h2 className="text-3xl font-bold tracking-tight">
                     {editingIndex !== null ? 'Edit Event' : 'Add Event Manually'}
