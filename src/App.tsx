@@ -15,7 +15,8 @@ import {
   CalendarDays,
   Type,
   ArrowLeft,
-  ExternalLink
+  ExternalLink,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
@@ -96,7 +97,18 @@ export default function App() {
     message: string; 
     details?: string;
     showDetails?: boolean;
+    autoDismiss?: boolean;
   } | null>(null);
+
+  useEffect(() => {
+    if (notification && notification.type !== 'error') {
+      const timer = setTimeout(() => {
+        setNotification(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
+
   const [showManualForm, setShowManualForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [manualEvent, setManualEvent] = useState<ExtractedEvent>({
@@ -108,6 +120,7 @@ export default function App() {
     endDate: '',
     endTime: '',
     price: '',
+    description: '',
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -283,6 +296,7 @@ export default function App() {
       endDate: '',
       endTime: '',
       price: '',
+      description: '',
     });
   };
 
@@ -548,27 +562,6 @@ export default function App() {
               <span className="hidden md:inline">Open Calendar</span>
             </a>
 
-            <AnimatePresence>
-              {notification && (
-                <motion.div 
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  className={cn(
-                    "hidden lg:flex items-center gap-3 px-4 py-2 rounded-full text-xs font-bold border shadow-sm",
-                    notification.type === 'error' ? "bg-red-50 border-red-100 text-red-600" : 
-                    notification.type === 'success' ? "bg-green-50 border-green-100 text-green-600" :
-                    "bg-blue-50 border-blue-100 text-blue-600"
-                  )}
-                >
-                  {notification.type === 'error' ? <AlertCircle className="w-4 h-4" /> : 
-                   notification.type === 'success' ? <Check className="w-4 h-4" /> : 
-                   <Loader2 className="w-4 h-4 animate-spin" />}
-                  {notification.message}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             <button 
               onClick={handleConnect}
               className={cn(
@@ -585,40 +578,50 @@ export default function App() {
         </div>
       </header>
 
-      {/* Mobile Notification */}
+      {/* Unified Notification System */}
       <AnimatePresence>
         {notification && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
             className={cn(
-              "md:hidden fixed top-24 left-6 right-6 z-[60] p-4 rounded-2xl text-sm font-bold shadow-xl border flex flex-col gap-2",
+              "fixed bottom-6 left-6 right-6 md:left-auto md:right-8 md:w-[400px] z-[200] p-5 rounded-[2rem] shadow-2xl border backdrop-blur-md flex flex-col gap-3",
               notification.type === 'error' ? "bg-red-500 text-white border-red-600" : 
-              notification.type === 'success' ? "bg-green-500 text-white border-green-600" :
-              "bg-blue-500 text-white border-blue-600"
+              notification.type === 'success' ? "bg-green-600 text-white border-green-700" :
+              "bg-[#1A1A1A] text-white border-black/20"
             )}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                {notification.type === 'error' ? <AlertCircle className="w-5 h-5" /> : 
-                 notification.type === 'success' ? <Check className="w-5 h-5" /> : 
-                 <Loader2 className="w-5 h-5 animate-spin" />}
-                {notification.message}
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="mt-1 flex-shrink-0">
+                  {notification.type === 'error' ? <AlertCircle className="w-5 h-5" /> : 
+                   notification.type === 'success' ? <Check className="w-5 h-5" /> : 
+                   <Loader2 className="w-5 h-5 animate-spin" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-sm leading-tight break-words">{notification.message}</p>
+                </div>
               </div>
-              <button onClick={() => setNotification(null)}>×</button>
+              <button 
+                onClick={() => setNotification(null)}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors shrink-0 -mt-2 -mr-2"
+                aria-label="Close notification"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
             {notification.details && (
-              <div className="mt-1">
+              <div className="pt-2 border-t border-white/10">
                 <button 
                   onClick={() => setNotification(prev => prev ? { ...prev, showDetails: !prev.showDetails } : null)}
-                  className="text-[10px] underline opacity-80"
+                  className="text-[10px] uppercase tracking-widest font-black opacity-70 hover:opacity-100 flex items-center gap-1"
                 >
-                  {notification.showDetails ? "Hide Details" : "Show Details"}
+                  {notification.showDetails ? "Hide Error Details" : "Show Error Details"}
                 </button>
                 {notification.showDetails && (
-                  <pre className="mt-2 p-2 bg-black/20 rounded-lg overflow-x-auto font-mono text-[9px] whitespace-pre-wrap break-all">
+                  <pre className="mt-3 p-3 bg-black/30 rounded-xl overflow-x-auto font-mono text-[9px] whitespace-pre-wrap break-all border border-white/5 max-h-40">
                     {notification.details}
                   </pre>
                 )}
@@ -928,6 +931,14 @@ export default function App() {
                               <span>{event.startDate} {event.endDate ? `to ${event.endDate}` : ''}</span>
                             </div>
                           </div>
+
+                          {event.description && (
+                            <div className="mt-4 pt-4 border-t border-gray-50">
+                              <p className="text-sm text-[#1A1A1A]/50 line-clamp-2">
+                                {event.description}
+                              </p>
+                            </div>
+                          )}
                         </div>
 
                         <div className="flex flex-col gap-3 justify-center md:w-48">
@@ -1069,6 +1080,42 @@ export default function App() {
                         className="w-full px-6 py-4 bg-[#F5F5F5] rounded-2xl border-none focus:ring-2 focus:ring-[#FF6321] transition-all font-medium"
                         value={manualEvent.startTime}
                         onChange={e => setManualEvent({...manualEvent, startTime: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-widest text-[#1A1A1A]/40 mb-2">End Date (Optional)</label>
+                      <input 
+                        type="date"
+                        className="w-full px-6 py-4 bg-[#F5F5F5] rounded-2xl border-none focus:ring-2 focus:ring-[#FF6321] transition-all font-medium"
+                        value={manualEvent.endDate}
+                        onChange={e => setManualEvent({...manualEvent, endDate: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-widest text-[#1A1A1A]/40 mb-2">End Time (Optional)</label>
+                      <input 
+                        type="time"
+                        className="w-full px-6 py-4 bg-[#F5F5F5] rounded-2xl border-none focus:ring-2 focus:ring-[#FF6321] transition-all font-medium"
+                        value={manualEvent.endTime}
+                        onChange={e => setManualEvent({...manualEvent, endTime: e.target.value})}
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-bold uppercase tracking-widest text-[#1A1A1A]/40 mb-2">Price (Optional)</label>
+                      <input 
+                        className="w-full px-6 py-4 bg-[#F5F5F5] rounded-2xl border-none focus:ring-2 focus:ring-[#FF6321] transition-all font-medium"
+                        value={manualEvent.price}
+                        onChange={e => setManualEvent({...manualEvent, price: e.target.value})}
+                        placeholder="e.g. €15, Free, Pay what you want"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-bold uppercase tracking-widest text-[#1A1A1A]/40 mb-2">Description (Optional)</label>
+                      <textarea 
+                        className="w-full px-6 py-4 bg-[#F5F5F5] rounded-2xl border-none focus:ring-2 focus:ring-[#FF6321] transition-all font-medium min-h-[100px] resize-none"
+                        value={manualEvent.description}
+                        onChange={e => setManualEvent({...manualEvent, description: e.target.value})}
+                        placeholder="e.g. A night of cosmic disco and funky house beats..."
                       />
                     </div>
                   </div>

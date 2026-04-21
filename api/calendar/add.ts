@@ -25,7 +25,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     const requestBody: any = {
       summary: event.name,
       location: event.address || event.venue,
-      description: `Venue: ${event.venue}\nPrice: ${event.price || 'N/A'}`,
+      description: `Venue: ${event.venue || 'N/A'}\nPrice: ${event.price || 'N/A'}\n\n${event.description || ''}`,
     };
 
     if (event.isAllDay) {

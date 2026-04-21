@@ -12,6 +12,7 @@ export interface ExtractedEvent {
   startTime?: string; // HH:mm
   endTime?: string;
   price?: string;
+  description?: string;
   startDateTime?: string; // ISO string
   endDateTime?: string; // ISO string
 }
@@ -29,6 +30,7 @@ const eventSchema = {
       startTime: { type: Type.STRING, description: "The start time in HH:mm format (optional)" },
       endTime: { type: Type.STRING, description: "The end time in HH:mm format (if available)" },
       price: { type: Type.STRING, description: "The price of the event (if available)" },
+      description: { type: Type.STRING, description: "A short description of the event (optional)" },
     },
     required: ["name", "startDate"],
   }
